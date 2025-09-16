@@ -1,0 +1,35 @@
+name: Flutter Windows Release Build
+
+on:
+  push:
+    branches:
+      - main # Trigger on pushes to the main branch
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build_windows:
+    runs-on: windows-latest # Use a Windows runner
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable' # Or 'beta', 'dev' as needed
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Enable Windows desktop support
+        run: flutter config --enable-windows-desktop
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Upload Windows artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-windows-release
+          path: build/windows/runner/Release/ # Path to the built release files
