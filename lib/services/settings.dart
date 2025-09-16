@@ -285,6 +285,7 @@ class SettingsService {
   SettingsService();
 
   Directory? _appHomeDir;
+  Directory get appHomeDir => _appHomeDir ?? Directory('');
 
   bool _initialized = false;
   Settings? _settings;
@@ -326,5 +327,16 @@ class SettingsService {
     _settings = settings;
     final appSettingsFile = File('${_appHomeDir!.path}/$appSettings');
     appSettingsFile.writeAsStringSync(jsonEncode(_settings!.toJson()));
+  }
+
+  Future<void> createOutputPath(String outputPath) async {
+    try {
+      final appHomeDir = Directory('${_appHomeDir!.path}/$outputPath');
+      if (!appHomeDir.existsSync()) {
+        appHomeDir.createSync();
+      }
+    } catch (e) {
+      logger.e('failed to create output path: $e');
+    }
   }
 }
