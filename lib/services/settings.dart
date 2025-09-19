@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:whisperui/singletons/logger.dart';
 
@@ -289,6 +290,7 @@ class SettingsService {
 
   bool _initialized = false;
   Settings? _settings;
+  final List<VoidCallback> _listeners = [];
   static SettingsService instance() {
     return _instance;
   }
@@ -327,5 +329,20 @@ class SettingsService {
     _settings = settings;
     final appSettingsFile = File('${_appHomeDir!.path}/$appSettings');
     appSettingsFile.writeAsStringSync(jsonEncode(_settings!.toJson()));
+    _notifyListeners();
+  }
+
+  void addListener(VoidCallback listener) {
+    _listeners.add(listener);
+  }
+
+  void removeListener(VoidCallback listener) {
+    _listeners.remove(listener);
+  }
+
+  void _notifyListeners() {
+    for (final listener in _listeners) {
+      listener();
+    }
   }
 }
