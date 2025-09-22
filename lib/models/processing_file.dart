@@ -1,3 +1,5 @@
+import 'package:path/path.dart' as p;
+
 enum ProcessingStatus { queued, processing, completed, error, cancelled }
 
 class ProcessingFile {
@@ -48,8 +50,11 @@ class ProcessingFile {
   }
 
   String get outputPath {
-    return customOutputPath ??
-        '${filePath.substring(0, filePath.lastIndexOf('/'))}/$fileName';
+    if (customOutputPath != null) {
+      return customOutputPath!;
+    }
+    final directory = p.dirname(filePath);
+    return p.join(directory, fileName);
   }
 
   bool get isCompleted => status == ProcessingStatus.completed;
